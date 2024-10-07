@@ -3,12 +3,41 @@ import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
+import { toast, useToast } from "@/hooks/use-toast"
+
 
 type Props = {}
 
 const ReportComponent = (props: Props) => {
     function handleReportSelection(event: ChangeEvent<HTMLInputElement>): void {
-        throw new Error('Function not implemented.')
+        if (!event.target.files) return;
+        const file = event.target.files[0]
+        if (file) {
+            let isValidImage = false;
+            let isValidDoc = false;
+
+            const validImages = ['image/jpeg', 'image/png', 'image/webp']
+            const validDocs = ['application/pdf']
+
+            if (validImages.includes(file.type)) {
+                isValidImage = true;
+            }
+            if (validDocs.includes(file.type)) {
+                isValidDoc = true;
+            }
+
+            if (!(isValidImage || isValidDoc)) {
+                toast({
+                    description: "Filetype is not supported",
+                    variant: 'destructive'
+                })
+                return
+            }
+
+            if
+
+
+        }
     }
 
     function extractDetails(): void {
