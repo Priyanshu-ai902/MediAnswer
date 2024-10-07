@@ -1,3 +1,5 @@
+"use client"
+
 import { ModeToggle } from '@/components/modetoggle'
 import ReportComponent from '@/components/reportComponent'
 import { Button } from '@/components/ui/button'
