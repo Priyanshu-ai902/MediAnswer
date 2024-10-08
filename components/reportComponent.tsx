@@ -6,13 +6,16 @@ import { Textarea } from './ui/textarea'
 import { useToast } from "@/hooks/use-toast"
 
 
-type Props = {}
+type Props = {
+    onReportConfirmation: (data: string) => void
+}
 
-const ReportComponent = (props: Props) => {
+const ReportComponent = ({ onReportConfirmation }: Props) => {
 
     const { toast } = useToast()
     const [base64Data, setBase64Data] = useState("")
     const [reportData, setReportData] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
 
     function handleReportSelection(event: ChangeEvent<HTMLInputElement>): void {
 
@@ -81,6 +84,10 @@ const ReportComponent = (props: Props) => {
             })
             return
         }
+
+        setIsLoading(true)
+
+
         const response = await fetch(
             'api/extractreportgemini',
             {
@@ -97,6 +104,7 @@ const ReportComponent = (props: Props) => {
             const reportText = await response.text()
             // console.log(reportText)
             setReportData(reportText)
+            setIsLoading(false)
         }
 
     }
@@ -107,6 +115,7 @@ const ReportComponent = (props: Props) => {
                 <legend className='text-sm font-medium'>
                     Report
                 </legend>
+                {isLoading && <div className="absolute z-10 h-full w-full bg-card/90 rounded-lg flex flex-row items-center justify-center">extarcting...</div>}
                 <Input type='file' onChange={handleReportSelection} />
                 <Button onClick={extractDetails}>1. Upload File</Button>
                 <Label>Report Summary</Label>
@@ -121,6 +130,9 @@ const ReportComponent = (props: Props) => {
                 />
                 <Button
                     className="bg-blue-500 hover:bg-blue-900  text-white"
+                    onClick={() => {
+                        onReportConfirmation(reportData)
+                    }}
                 >
                     2. Looks Good
                 </Button>
