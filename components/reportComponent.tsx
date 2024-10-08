@@ -12,13 +12,15 @@ const ReportComponent = (props: Props) => {
 
     const { toast } = useToast()
     const [base64Data, setBase64Data] = useState("")
-
+    const [reportData, setReportData] = useState("")
 
     function handleReportSelection(event: ChangeEvent<HTMLInputElement>): void {
 
 
         if (!event.target.files) return;
+
         const file = event.target.files[0]
+
         if (file) {
             let isValidImage = false;
             let isValidDoc = false;
@@ -45,7 +47,7 @@ const ReportComponent = (props: Props) => {
                 const reader = new FileReader()
                 reader.onloadend = () => {
                     const fileContent = reader.result as string;
-                    console.log(fileContent)
+                    // console.log(fileContent)
 
                     setBase64Data(fileContent)
                 }
@@ -71,7 +73,7 @@ const ReportComponent = (props: Props) => {
         }
     }
 
-    async function extractDetails(): void {
+    async function extractDetails(): Promise<void> {
         if (!base64Data) {
             toast({
                 description: 'Upload a valid report',
@@ -93,7 +95,8 @@ const ReportComponent = (props: Props) => {
         )
         if (response.ok) {
             const reportText = await response.text()
-            console.log(reportText)
+            // console.log(reportText)
+            setReportData(reportText)
         }
 
     }
@@ -110,6 +113,11 @@ const ReportComponent = (props: Props) => {
                 <Textarea
                     placeholder='Extracted data from the report will appear here.Get better recommendation by providing additional patient history and symptons...'
                     className='min-h-72 resize-none border-0 p-3 shadow-none focus-visible:ring-0'
+
+                    value={reportData}
+                    onChange={(e) => {
+                        setReportData(e.target.value)
+                    }}
                 />
                 <Button
                     className="bg-blue-500 hover:bg-blue-900  text-white"
