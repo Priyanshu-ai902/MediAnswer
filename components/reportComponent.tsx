@@ -71,8 +71,31 @@ const ReportComponent = (props: Props) => {
         }
     }
 
-    function extractDetails(): void {
-        throw new Error('Function not implemented.')
+    async function extractDetails(): void {
+        if (!base64Data) {
+            toast({
+                description: 'Upload a valid report',
+                variant: 'destructive'
+            })
+            return
+        }
+        const response = await fetch(
+            'api/extractreportgemini',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    base64: base64Data
+                })
+            }
+        )
+        if (response.ok) {
+            const reportText = await response.text()
+            console.log(reportText)
+        }
+
     }
 
     return (
