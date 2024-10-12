@@ -1,20 +1,36 @@
-import { Message } from "ai/react";
-import { Pinecone } from "@pinecone-database/pinecone";
-import { queryPineconeVectorStore } from "@/utils";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! })
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-pro",
+});
+
+const promptTemplate = (reportData: string, userQuestion: string) => `
+Patient medical report says: 
+${reportData}
+
+Question: ${userQuestion}
+
+## Response:
+`;
 
 export async function POST(req: Request, res: Response) {
-    const reqBody = await req.json()
-    console.log(reqBody)
-    const messages: Message[] = reqBody.messages
-    const userQuestion = messages[messages.length - 1].content
-    const reportData = reqBody.data.reportData
+    const { messages, data } = await req.json();
+    console.log("Messages:", messages);
+    console.log("Report Data:", data.reportData);
 
-    const serachQuery = `Represent this for searching relevant passages: Patient medical report says: \n${reportData} \n\n ${userQuestion}`
+    const userQuestion = messages[messages.length - 1].content;
+    console.log("User Question:", userQuestion);
 
-    const retrievals = await queryPineconeVectorStore(pc, 'medianswer', 'ns1', serachQuery)
+    const reportData = data.reportData;
+    const prompt = promptTemplate(reportData, userQuestion);
 
-    return new Response("dummy response", { status: 200 })
+    const generatedContent = await model.generateContent([prompt]);
+    console.log("Generated Content:", generatedContent);
 
+    const aiResponse = generatedContent.response.candidates![0].content.parts[0].text;
+    console.log("AI Response:", aiResponse);
+
+    return new Response(JSON.stringify({ message: aiResponse }), { status: 200 });
 }
+
