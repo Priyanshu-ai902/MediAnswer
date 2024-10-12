@@ -11,8 +11,8 @@ export async function POST(req: Request, res: Response) {
     const userQuestion = messages[messages.length - 1].content
     const reportData = reqBody.data.reportData
 
-    const serachQuery = `Patient medical report says: \n${reportData} \n\n ${userQuestion}`
-    
+    const serachQuery = `Represent this for searching relevant passages: Patient medical report says: \n${reportData} \n\n ${userQuestion}`
+
     const retrievals = await queryPineconeVectorStore(pc, 'medianswer', 'ns1', serachQuery)
 
     return new Response("dummy response", { status: 200 })
