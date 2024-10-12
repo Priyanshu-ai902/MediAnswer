@@ -1,5 +1,6 @@
 "use client"
 
+import ChatComponent from '@/components/chatComponent'
 import { ModeToggle } from '@/components/modetoggle'
 import ReportComponent from '@/components/reportComponent'
 import { Button } from '@/components/ui/button'
@@ -47,6 +48,15 @@ const HomeComponent = (props: Props) => {
             </Drawer>
           </div>
         </header>
+
+        <main className='grid flex-1 gap-4 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-3'>
+          <div className="hidden md:flex flex-col">
+            <ReportComponent onReportConfirmation={onReportConfirmation} />
+          </div>
+          <div className="lg:col-span-2">
+            <ChatComponent reportData={reportData}/>
+          </div>
+        </main>
       </div>
     </div>
   )
